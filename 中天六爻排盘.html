@@ -6,6 +6,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>中天六爻</title>
 <link rel="apple-touch-icon" href="./icon-180.png.JPG">
+<script src="lunar.js"></script>
     
 <style>
 * {
@@ -663,18 +664,24 @@ function backHome() {
 ========================= */
 
 function renderResult(arr) {
-    const date = new Date(document.getElementById("datetime").value);
+    const dateInput = document.getElementById("datetime").value;
+    const date = new Date(dateInput);
 
     if (isNaN(date.getTime())) {
         alert("请先选择起卦时间");
         return;
     }
 
+    // --- 使用 lunar.js 获取精准干支 ---
+    const lunar = Lunar.fromDate(date);
+    const yearGZ = lunar.getYearInGanZhi();
+    const monthGZ = lunar.getMonthInGanZhi();
+    const dayGZ = lunar.getDayInGanZhi();
+    const timeGZ = lunar.getTimeInGanZhi();
+    const kong = lunar.getDayXunKong(); // 获取旬空
+    const dayGan = lunar.getDayGan();   // 获取日干用于装卦
+
     const question = document.getElementById("question").value.trim();
-
-    const gz = getGanzhi(date);
-    const kong = getXunKong(gz.dayGan, gz.dayZhi);
-
     const mainCode = arr.map(yaoToBit).join("");
     const changeCode = arr.map(changedBit).join("");
 
@@ -687,15 +694,9 @@ function renderResult(arr) {
     document.getElementById("apkQuestion").innerText = question ? "问：" + question : "";
     document.getElementById("apkTime").innerText = formatDateTime(date);
 
-    /*
-        旬空与年月日时并列。
-    */
+    // 更新显示，使用 lunar.js 的数据
     document.getElementById("apkGanzhi").innerText =
-    gz.year + "年 " +
-    gz.month + "月 " +
-    gz.day + "日 " +
-    gz.hour + "时 " +
-    "（" + kong + "空）";
+        `${yearGZ}年 ${monthGZ}月 ${dayGZ}日 ${timeGZ}时 （${kong}空）`;
 
     document.getElementById("mainTitle").innerText = mainName + "（" + mainPalace + "）";
     document.getElementById("changeTitle").innerText = changeName + "（" + changePalace + "）";
@@ -706,7 +707,7 @@ function renderResult(arr) {
         changeCode,
         mainName,
         changeName,
-        dayGan: gz.dayGan
+        dayGan: dayGan // 传入精准的日干
     });
 
     document.getElementById("debugBox").innerHTML =
@@ -714,13 +715,13 @@ function renderResult(arr) {
         "变卦编码：" + changeCode + " = " + changeName;
 
     // 起完卦后，隐藏首页
-document.getElementById("headerCard").classList.add("hidden");
-document.getElementById("inputCard").classList.add("hidden");
-document.getElementById("manualCard").classList.add("hidden");
+    document.getElementById("headerCard").classList.add("hidden");
+    document.getElementById("inputCard").classList.add("hidden");
+    document.getElementById("manualCard").classList.add("hidden");
 
-// 显示排盘结果
-document.getElementById("resultCard").classList.remove("hidden");
-document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
+    // 显示排盘结果
+    document.getElementById("resultCard").classList.remove("hidden");
+    document.getElementById("resultCard").scrollIntoView({ behavior: "smooth" });
 }
 
 function makeApkRows(ctx) {
