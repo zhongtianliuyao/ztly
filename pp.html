@@ -3158,5 +3158,87 @@ questionInput.required = false;
     display: none !important;
 }
 </style>
+<style>
+/* 只在结果页显示时锁定页面，首页不受影响。 */
+html.result-scroll-locked {
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
+body.result-scroll-locked {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    height: 100% !important;
+    height: 100dvh !important;
+    overflow: hidden !important;
+    overscroll-behavior: none !important;
+}
+
+/* 禁止结果页通过手势拖动整个页面。 */
+body.result-scroll-locked #resultCard {
+    touch-action: none !important;
+}
+
+/* 所问事项仍可点击、输入和选择文字。 */
+body.result-scroll-locked #resultCard textarea {
+    touch-action: auto !important;
+}
+</style>
+
+<script>
+(function () {
+    const resultCard = document.getElementById("resultCard");
+    if (!resultCard) return;
+
+    const lockClass = "result-scroll-locked";
+    let locked = false;
+
+    function syncResultScroll() {
+        const shouldLock = !resultCard.classList.contains("hidden");
+
+        if (shouldLock === locked) return;
+        locked = shouldLock;
+
+        document.documentElement.classList.toggle(lockClass, locked);
+        document.body.classList.toggle(lockClass, locked);
+
+        // 取消此前平滑滚动的影响，回到页面初始位置。
+        window.scrollTo({
+            top: 0,
+            left: 0,
+            behavior: "instant"
+        });
+    }
+
+    // 监听结果页显示/隐藏，不需要修改原来的排盘及返回函数。
+    const observer = new MutationObserver(syncResultScroll);
+    observer.observe(resultCard, {
+        attributes: true,
+        attributeFilter: ["class"]
+    });
+
+    // 兼容部分 iPhone 浏览器，阻止页面拖动与回弹。
+    document.addEventListener("touchmove", function (event) {
+        if (!locked) return;
+
+        // 保留输入框内部的操作。
+        if (
+            event.target instanceof Element &&
+            event.target.closest("#resultCard textarea")
+        ) {
+            return;
+        }
+
+        if (event.cancelable) {
+            event.preventDefault();
+        }
+    }, { passive: false });
+
+    syncResultScroll();
+})();
+</script>
 </body>
 </html>
