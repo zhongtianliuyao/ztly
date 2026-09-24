@@ -3098,34 +3098,5 @@ questionInput.required = false;
     margin: 0 0 12px 0 !important;
 }
 </style>
-<style>
-/* 静卦：只使用前三列需要的宽度，不再撑满整行。 */
-#resultCard.no-change .apk-table {
-    width: 66% !important;
-    min-width: 0 !important;
-    table-layout: fixed !important;
-    margin-left: 0 !important;
-    margin-right: auto !important;
-}
-
-/* 保持与有变卦时一致的实际列宽：
-   原来的12 : 20 : 34，按三列总宽66重新分配。 */
-#resultCard.no-change .apk-table .col-god {
-    width: 18.1818% !important;
-}
-
-#resultCard.no-change .apk-table .col-fu {
-    width: 30.3030% !important;
-}
-
-#resultCard.no-change .apk-table .col-main {
-    width: 51.5152% !important;
-}
-
-/* 静卦不显示变卦列。 */
-#resultCard.no-change .apk-table .col-change {
-    display: none !important;
-}
-</style>
 </body>
 </html>
