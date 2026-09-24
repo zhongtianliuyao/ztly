@@ -3071,5 +3071,32 @@ questionInput.required = false;
     }
 }
 </style>
+<style>
+/* 结果页顶部留出安全距离，避开手机状态栏。 */
+#resultCard {
+    box-sizing: border-box;
+    padding-top: 48px !important;
+    padding-top: max(
+        48px,
+        calc(env(safe-area-inset-top, 0px) + 12px)
+    ) !important;
+}
+
+/* 返回按钮取消悬浮定位，正常排列在日期上方。 */
+#resultCard #backBtn {
+    position: static !important;
+    inset: auto !important;
+    transform: none !important;
+    translate: none !important;
+    float: none !important;
+
+    display: flex !important;
+    width: fit-content !important;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 0 12px 0 !important;
+}
+</style>
 </body>
 </html>
